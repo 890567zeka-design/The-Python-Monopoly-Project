@@ -53,12 +53,12 @@ class GameUI:
         lines1 = faces[dice1]
         lines2 = faces[dice2]
 
-        print(f"\n{player.name} бросает кубики:")
+        print(f"\n{player.name} бросает кубики:", flush=True)
         for i in range(5):
-            print(lines1[i] + "   " + lines2[i])
+            print(lines1[i] + "   " + lines2[i], flush=True)
 
         total = dice1 + dice2
-        print(f"Сумма: {total}\n")
+        print(f"Сумма: {dice1} + {dice2} = {total}\n", flush=True)
         return total
 
     def show_player_status(self, players, board):
@@ -66,7 +66,8 @@ class GameUI:
         for p in players:
             if not p.bankrupt:
                 cell_name = board.get_cell(p.position).name
-                print(f"{p.name}: {p.money}₽ | позиция {p.position} ({cell_name})")
+                user_position = p.position + 1
+                print(f"{p.name}: {p.money}₽ | позиция {user_position} ({cell_name})")
             else:
                 print(f"{p.name}: БАНКРОТ")
         print("=====================\n")
@@ -112,7 +113,7 @@ class Game:
             self.current_player_index = (self.current_player_index + 1) % len(self.players)
             return
 
-        self.ui.message(f"\nХОД ИГРОКА {player.name.upper()}")
+        self.ui.message(f"\n--- ХОД ИГРОКА {player.name.upper()} ---")
         self.ui.show_player_status(self.players, self.board)
         self.ui.show_properties(self.players)
 
@@ -125,7 +126,9 @@ class Game:
 
         old_pos = player.position
         new_pos = player.move(total, self.board.size)
-        self.ui.message(f"{player.name} перемещается с {old_pos} ({self.board.get_cell(old_pos).name}) на {new_pos} ({self.board.get_cell(new_pos).name})")
+        old_user_pos = old_pos + 1
+        new_user_pos = new_pos + 1
+        self.ui.message(f"{player.name} перемещается с {old_user_pos} ({self.board.get_cell(old_pos).name}) на {new_user_pos} ({self.board.get_cell(new_pos).name})")
 
         cell = self.board.get_cell(new_pos)
         self.ui.message(f"Клетка: {cell.name}")
@@ -134,6 +137,8 @@ class Game:
         self.current_player_index = (self.current_player_index + 1) % len(self.players)
 
     def handle_jail_turn(self, player):
+        """Обработка хода игрока, находящегося в тюрьме.
+        Игрок может выйти, выбросив дубль, или отсидев 3 хода."""
         self.ui.message(f"{player.name} находится в тюрьме. Попыток выйти: {player.jail_turns}")
         if player.jail_turns >= 3:
             player.in_jail = False
@@ -167,6 +172,8 @@ class Game:
         card.apply(player, self)
 
     def handle_bankruptcy(self, player):
+        """Обработка банкротства игрока.
+        Игрок выбывает, его собственность переходит банку ."""
         self.ui.message(f"{player.name} обанкротился!")
         player.bankrupt = True
         for prop in player.properties:
@@ -176,6 +183,8 @@ class Game:
         player.properties.clear()
 
     def check_winner(self):
+        """Проверяет, остался ли только один активный игрок.
+        Если да — объявляет победителя и завершает игру."""
         active_players = [p for p in self.players if not p.bankrupt]
         if len(active_players) == 1:
             winner = active_players[0]
@@ -183,4 +192,3 @@ class Game:
             self.game_over = True
             return True
         return False
-    
