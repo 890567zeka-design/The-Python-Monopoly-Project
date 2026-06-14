@@ -1,9 +1,7 @@
 class Player:
-    """Игрок: деньги, позиция, собственность и состояние."""
-
     def __init__(self, name: str):
         self.name = name
-        self.money = 1500        
+        self.money = 1500
         self.position = 0
         self.properties = []
         self.in_jail = False
@@ -26,7 +24,7 @@ class Player:
     def move(self, steps: int, board_size: int) -> int:
         new_pos = self.position + steps
         if new_pos >= board_size:
-            self.receive(200)      
+            self.receive(200)
             new_pos -= board_size
         self.position = new_pos
         return self.position
@@ -40,4 +38,4 @@ class Player:
         return False
 
     def __str__(self):
-        return f"{self.name}: {self.money}₽ | позиция {self.position}"
+        return f"{self.name}: {self.money}₽ | позиция {self.position + 1}"
