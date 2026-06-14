@@ -1,42 +1,46 @@
-from cells import (
-    Go, Property, Tax, Chance, CommunityChest,
-    Jail, GoToJail, FreeParking
-)
+from cells import Property, Tax, CellFactory
+
 
 class Board:
     def __init__(self):
+        self.factory = CellFactory()
         self.cells = self._create_board()
         self.size = len(self.cells)
 
     def _create_board(self):
         board = []
-        board.append(Go("СТАРТ (получи 200₽ и катись)"))
-        board.append(Property("Улица Ленивых котов", 60, 2, "коричневый"))
-        board.append(CommunityChest("Щедрая кубышка (или нет)"))
-        board.append(Property("Проспект Разбитых надежд", 60, 4, "коричневый"))
-        board.append(Tax("Налог на воздух", 200))
-        board.append(Property("Железная дорога «Чух-чух-самолёт»", 200, 25, "ж/д"))
-        board.append(Property("Восточный базар", 100, 6, "голубой"))
-        board.append(Chance("Везение-невезение"))
-        board.append(Property("Вермонтский сыровар", 100, 6, "голубой"))
-        board.append(Property("Коннектикутский тайник", 120, 8, "голубой"))
-        board.append(Jail("Тюрьма «Буханка хлеба»"))
-        board.append(Property("Площадь Сломанного телефона", 140, 10, "розовый"))
-        board.append(Property("Энергетическая яма (коммуналка)", 150, 20, "коммунальная"))
-        board.append(Property("Авеню Бесплатного сыра", 140, 10, "розовый"))
-        board.append(Property("Виргинский шкаф", 160, 12, "розовый"))
-        board.append(Property("Пенсильванская колбасная", 200, 25, "ж/д"))
-        board.append(CommunityChest("Сундук скелета"))
-        board.append(Property("Площадь Скунса", 180, 14, "оранжевый"))
-        board.append(Chance("Удача пришла, ура!"))
-        board.append(Property("Теннессийский самогон", 180, 14, "оранжевый"))
-        board.append(Property("Нью-Йоркский пончик", 200, 16, "оранжевый"))
-        board.append(FreeParking("Парковка для единорогов"))
-        board.append(Property("Кентуккийский петух", 220, 18, "красный"))
-        board.append(Chance("Нежданчик"))
-        board.append(Property("Индианская соусная", 220, 18, "красный"))
-        board.append(Property("Иллинойский Лось", 240, 20, "красный"))
-        board.append(GoToJail("Лети в тюрьму, не промахнись"))
+
+        board.append(self.factory.create_go("СТАРТ"))
+        board.append(Property("Средиземноморский проспект", 60, 2, "коричневый"))
+        board.append(self.factory.create_community_chest("Общественная казна"))
+        board.append(Property("Балтийский проспект", 60, 4, "коричневый"))
+        board.append(Tax("Налог на доход", 200))
+        board.append(Property("Читающая железная дорога", 200, 25, "ж/д"))
+        board.append(Property("Восточный проспект", 100, 6, "голубой"))
+        board.append(self.factory.create_chance("Шанс"))
+        board.append(Property("Вермонтский проспект", 100, 6, "голубой"))
+        board.append(Property("Коннектикутский проспект", 120, 8, "голубой"))
+        board.append(self.factory.create_jail("Тюрьма"))
+        board.append(Property("Сент-Чарльз-плейс", 140, 10, "розовый"))
+        board.append(Property("Электрическая компания", 150, 20, "коммунальная"))
+        board.append(Property("Стейтс-авеню", 140, 10, "розовый"))
+        board.append(Property("Виргиния-авеню", 160, 12, "розовый"))
+        board.append(Property("Пенсильванская железная дорога", 200, 25, "ж/д"))
+        board.append(self.factory.create_community_chest("Общественная казна"))
+        board.append(Property("Сент-Джеймс-плейс", 180, 14, "оранжевый"))
+        board.append(self.factory.create_chance("Шанс"))
+        board.append(Property("Теннесси-авеню", 180, 14, "оранжевый"))
+        board.append(Property("Нью-Йорк-авеню", 200, 16, "оранжевый"))
+        board.append(self.factory.create_free_parking("Бесплатная стоянка"))
+        board.append(Property("Кентукки-авеню", 220, 18, "красный"))
+        board.append(self.factory.create_chance("Шанс"))
+        board.append(Property("Индиана-авеню", 220, 18, "красный"))
+        board.append(Property("Иллинойс-авеню", 240, 20, "красный"))
+        board.append(self.factory.create_go_to_jail("Идите в тюрьму"))
+        board.append(Property("Атлантик-авеню", 260, 22, "жёлтый"))
+        board.append(Property("Вентнор-авеню", 260, 22, "жёлтый"))
+        board.append(Property("Марвин-гарденс", 280, 24, "жёлтый"))
+
         return board
 
     def get_cell(self, position):
@@ -44,6 +48,6 @@ class Board:
 
     def get_jail_position(self):
         for i, cell in enumerate(self.cells):
-            if isinstance(cell, Jail):
+            if cell.cell_type == "jail":
                 return i
-        return 10  
+        return 10
